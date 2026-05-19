@@ -103,9 +103,11 @@ header{background:var(--bg-magenta);padding:0 2rem;display:flex;align-items:cent
 .date-range{display:flex;flex-direction:column;gap:5px}
 .date-range-row{display:flex;align-items:center;gap:6px}
 .date-range-row label{font-size:9px;color:var(--gris5);width:32px;flex-shrink:0;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
-.date-range-row input[type="date"]{flex:1;font-family:"Montserrat",sans-serif;font-size:11px;padding:6px 8px;border-radius:var(--radio);border:1.5px solid var(--borde);background:var(--gris1);color:var(--negro);outline:none;cursor:pointer;transition:all .12s;font-weight:500}
-.date-range-row input[type="date"]:focus{border-color:var(--bg-magenta)}
-.date-range-row input[type="date"].activo{background:var(--bg-magenta);border-color:var(--bg-magenta);color:#fff;color-scheme:dark}
+.date-range-row input[type="date"]{flex:1;font-family:"Montserrat",sans-serif;font-size:11px;padding:6px 8px;border-radius:var(--radio);border:1.5px solid var(--borde);background:var(--gris1);color:var(--negro);outline:none;cursor:pointer;transition:all .12s;font-weight:500;color-scheme:light}
+.date-range-row input[type="date"]:focus{border-color:var(--bg-magenta);box-shadow:0 0 0 3px var(--bg-magenta-light)}
+.date-range-row input[type="date"].activo{background:var(--bg-magenta);border-color:var(--bg-magenta);color:#fff;color-scheme:light}
+.date-range-row input[type="date"]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:0.6;filter:none}
+.date-range-row input[type="date"].activo::-webkit-calendar-picker-indicator{filter:brightness(0) invert(1);opacity:0.8}
 .date-week-hint{font-size:9px;color:var(--gris5);margin-top:3px;font-weight:500}
 
 /* CHIPS */
@@ -204,9 +206,9 @@ header{background:var(--bg-magenta);padding:0 2rem;display:flex;align-items:cent
 .card-desc{font-size:13px;color:var(--gris6);line-height:1.65;padding-left:27px;margin-bottom:10px;font-weight:400}
 .card-badges{display:flex;gap:5px;flex-wrap:wrap;padding-left:27px;align-items:center}
 .badge{font-size:10px;padding:3px 10px;border-radius:var(--radio-pill);font-weight:600;display:inline-block;white-space:nowrap}
-.b-alto{background:var(--rojo-claro);color:var(--rojo);border:1px solid var(--rojo-borde)}
-.b-medio{background:var(--ambar-claro);color:var(--ambar);border:1px solid var(--ambar-borde)}
-.b-bajo{background:var(--verde-claro);color:var(--verde);border:1px solid var(--verde-borde)}
+.b-alto{background:#FEEAEA;color:#B0001E;border:1px solid #F5C0C0}
+.b-medio{background:var(--bg-magenta-light);color:var(--bg-magenta-dark);border:1px solid #F0A0C8}
+.b-bajo{background:var(--gris2);color:var(--gris6);border:1px solid var(--gris3)}
 .b-tag{background:var(--gris2);color:var(--gris6);border:1px solid var(--borde)}
 .b-doc{background:var(--azul-claro);color:var(--azul);border:1px solid var(--azul-borde);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:all .12s}
 .b-doc:hover{background:#daeafe}
@@ -218,7 +220,7 @@ header{background:var(--bg-magenta);padding:0 2rem;display:flex;align-items:cent
 .kanban-col{flex:0 0 282px;background:var(--blanco);border:1.5px solid var(--borde);border-radius:var(--radio-lg);overflow:hidden;box-shadow:var(--sombra-card)}
 .kanban-col-header{padding:11px 14px;border-bottom:1px solid var(--borde);display:flex;align-items:center;justify-content:space-between;background:var(--gris1)}
 .kanban-col-title{font-size:11px;font-weight:800;color:var(--negro);letter-spacing:0.02em;text-transform:uppercase}
-.kanban-col-count{font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;color:#fff;letter-spacing:0.04em}
+.kanban-col-count{font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;color:#fff;letter-spacing:0.04em;background:var(--bg-magenta)}
 .kanban-cards{padding:10px;display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 210px);overflow-y:auto}
 .kanban-cards::-webkit-scrollbar{width:3px}.kanban-cards::-webkit-scrollbar-thumb{background:var(--bg-magenta-light)}
 
@@ -479,7 +481,7 @@ function doLogout(){sessionStorage.removeItem(SESSION_KEY);location.reload();}
 const MESES=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const SECTORES=["Administración pública","Salud y asistencia a la persona","Telecomunicaciones y suministros","Minería y petróleo","Agricultura Ganadería Pesca y Acuicultura","Construcción","Manufactura","Actividades financieras y Seguros","Automotriz","Comercio","Finanzas Públicas","Política Pública","Convenios Internacionales"];
 const FACTORES=["Socioeconómico","Ambiental","Legal","Político","Económico","Comercio Exterior","Impuestos","Seguridad"];
-const FACTOR_COLORS={"Socioeconómico":"#f97316","Ambiental":"#22c55e","Legal":"#3b82f6","Político":"#a855f7","Económico":"#ef4444","Comercio Exterior":"#06b6d4","Impuestos":"#eab308","Seguridad":"#ec4899"};
+const FACTOR_COLORS={"Socioeconómico":"#6B6068","Ambiental":"#6B6068","Legal":"#6B6068","Político":"#6B6068","Económico":"#6B6068","Comercio Exterior":"#6B6068","Impuestos":"#6B6068","Seguridad":"#6B6068"};
 
 let noticias=[],selected=new Set();
 let filtros={impacto:"all",sector:"all",factor:"all",prio:false,desde:null,hasta:null,q:""};
@@ -493,9 +495,9 @@ else{document.getElementById("loginOverlay").classList.add("hidden");window.addE
 function toISODate(d){return d.toISOString().slice(0,10);}
 function getMonthRange(){
   const today=new Date();
-  const from=new Date(today);
-  from.setDate(today.getDate()-30);
-  return{desde:toISODate(from),hasta:toISODate(today)};
+  const from=new Date(today.getFullYear(),today.getMonth(),1);
+  const to=new Date(today.getFullYear(),today.getMonth()+1,0);
+  return{desde:toISODate(from),hasta:toISODate(to)};
 }
 function setMonthDefault(){
   const{desde,hasta}=getMonthRange();
@@ -509,7 +511,7 @@ function setMonthDefault(){
 function updateHint(desde,hasta){
   const d1=new Date(desde+"T00:00:00"),d2=new Date(hasta+"T00:00:00");
   const fmt=d=>d.getDate()+" "+MESES[d.getMonth()].slice(0,3);
-  document.getElementById("weekHint").textContent="Período: "+fmt(d1)+" – "+fmt(d2);
+  document.getElementById("weekHint").textContent="Mes en curso: "+fmt(d1)+" – "+fmt(d2);
 }
 function setFechaRango(){
   const d=document.getElementById("fDesde").value,h=document.getElementById("fHasta").value;
@@ -737,9 +739,9 @@ function renderKanban(vis,q){
     const cards = cols[factor]||[];
     const color = FACTOR_COLORS[factor]||"#9A8F94";
     return `<div class="kanban-col">
-      <div class="kanban-col-header" style="border-top:3px solid ${color}">
+      <div class="kanban-col-header" style="border-top:3px solid var(--bg-magenta)">
         <span class="kanban-col-title">${factor}</span>
-        <span class="kanban-col-count" style="background:${color}">${cards.length}</span>
+        <span class="kanban-col-count" style="background:var(--bg-magenta)">${cards.length}</span>
       </div>
       <div class="kanban-cards">${cards.map(n=>kCard(n,q)).join("")}</div>
     </div>`;
@@ -859,15 +861,15 @@ function renderStatsView(){
     // ROW 1: Factor bars + Donut impacto
     "<div class=\"sv-grid\">"+
       "<div class=\"sv-panel\"><div class=\"sv-panel-title\">Noticias por Factor</div><div class=\"hbar-list\">"+
-        factorSorted.map(([name,count],i)=>"<div class=\"hbar-row\"><span class=\"hbar-label\" title=\""+name+"\">"+name+"</span><div class=\"hbar-track\"><div class=\"hbar-fill\" style=\"width:"+(count/maxF*100)+"%;background:"+(FACTOR_COLORS[name]||"#9A8F94")+"\"></div></div><span class=\"hbar-val\">"+count+"</span><span class=\"hbar-pct\">"+Math.round(count/total*100)+"%</span></div>").join("")+
+        factorSorted.map(([name,count],i)=>"<div class=\"hbar-row\"><span class=\"hbar-label\" title=\""+name+"\">"+name+"</span><div class=\"hbar-track\"><div class=\"hbar-fill\" style=\"width:"+(count/maxF*100)+"%;background:"+["#E2007A","#B5005F","#C8406A","#9A3050","#6B6068","#9A8F94","#CFC8CC","#1A0A12"][factorSorted.indexOf(factorSorted.find(([n])=>n===name))%8]+"\"></div></div><span class=\"hbar-val\">"+count+"</span><span class=\"hbar-pct\">"+Math.round(count/total*100)+"%</span></div>").join("")+
       "</div></div>"+
       "<div class=\"sv-panel\"><div class=\"sv-panel-title\">Distribución por Impacto</div>"+
         "<div class=\"donut-wrap-lg\">"+
-          donutSVG([{val:alto,color:"#C0392B"},{val:medio,color:"#B7600A"},{val:bajo,color:"#1A7A3C"}],140)+
+          donutSVG([{val:alto,color:"#C0392B"},{val:medio,color:"#E2007A"},{val:bajo,color:"#CFC8CC"}],140)+
           "<div class=\"donut-legend-lg\">"+
             "<div class=\"donut-leg-item-lg\"><div class=\"donut-leg-dot-lg\" style=\"background:#C0392B\"></div><span class=\"donut-leg-label\">Alto</span><span class=\"donut-leg-val\">"+alto+"</span><span class=\"donut-leg-pct\">"+Math.round(alto/total*100)+"%</span></div>"+
-            "<div class=\"donut-leg-item-lg\"><div class=\"donut-leg-dot-lg\" style=\"background:#B7600A\"></div><span class=\"donut-leg-label\">Medio</span><span class=\"donut-leg-val\">"+medio+"</span><span class=\"donut-leg-pct\">"+Math.round(medio/total*100)+"%</span></div>"+
-            "<div class=\"donut-leg-item-lg\"><div class=\"donut-leg-dot-lg\" style=\"background:#1A7A3C\"></div><span class=\"donut-leg-label\">Bajo</span><span class=\"donut-leg-val\">"+bajo+"</span><span class=\"donut-leg-pct\">"+Math.round(bajo/total*100)+"%</span></div>"+
+            "<div class=\"donut-leg-item-lg\"><div class=\"donut-leg-dot-lg\" style=\"background:#E2007A\"></div><span class=\"donut-leg-label\">Medio</span><span class=\"donut-leg-val\">"+medio+"</span><span class=\"donut-leg-pct\">"+Math.round(medio/total*100)+"%</span></div>"+
+            "<div class=\"donut-leg-item-lg\"><div class=\"donut-leg-dot-lg\" style=\"background:#CFC8CC\"></div><span class=\"donut-leg-label\">Bajo</span><span class=\"donut-leg-val\">"+bajo+"</span><span class=\"donut-leg-pct\">"+Math.round(bajo/total*100)+"%</span></div>"+
           "</div>"+
         "</div>"+
       "</div>"+
@@ -881,8 +883,8 @@ function renderStatsView(){
         "<div style=\"margin-top:.25rem\">"+
           ifSorted.map(([factor,d])=>{const t=d.Alto+d.Medio+d.Bajo;return"<div class=\"sb-row\"><span class=\"sb-label\" title=\""+factor+"\">"+factor.slice(0,12)+"</span><div class=\"sb-track\">"+
             (d.Alto?"<div class=\"sb-seg\" style=\"width:"+(d.Alto/t*100)+"%;background:#C0392B\">"+(d.Alto>1?d.Alto:"")+"</div>":"")+
-            (d.Medio?"<div class=\"sb-seg\" style=\"width:"+(d.Medio/t*100)+"%;background:#B7600A\">"+(d.Medio>1?d.Medio:"")+"</div>":"")+
-            (d.Bajo?"<div class=\"sb-seg\" style=\"width:"+(d.Bajo/t*100)+"%;background:#1A7A3C\">"+(d.Bajo>1?d.Bajo:"")+"</div>":"")+
+            (d.Medio?"<div class=\"sb-seg\" style=\"width:"+(d.Medio/t*100)+"%;background:#E2007A\">"+(d.Medio>1?d.Medio:"")+"</div>":"")+
+            (d.Bajo?"<div class=\"sb-seg\" style=\"width:"+(d.Bajo/t*100)+"%;background:#9A8F94\">"+(d.Bajo>1?d.Bajo:"")+"</div>":"")+
           "</div><span class=\"sb-val\">"+t+"</span></div>";}).join("")+
         "</div>"+
       "</div>"+
@@ -933,7 +935,7 @@ function abrirModal(){document.getElementById("modalDesc").textContent="Se inclu
 function cerrarModal(){document.getElementById("modalOverlay").classList.remove("open");}
 
 // ==================== PDF ====================
-function impactoColorPDF(v){if(v==="Alto")return{bg:"#FEF0EE",color:"#C0392B",border:"#F5C0BA"};if(v==="Medio")return{bg:"#FEF6EC",color:"#B7600A",border:"#F5D5A8"};return{bg:"#EDF7F2",color:"#1A7A3C",border:"#A8DCC0"};}
+function impactoColorPDF(v){if(v==="Alto")return{bg:"#FEEAEA",color:"#B0001E",border:"#F5C0C0"};if(v==="Medio")return{bg:"#FCE8F3",color:"#B5005F",border:"#F0A0C8"};return{bg:"#F3F0F2",color:"#6B6068",border:"#CFC8CC"};}
 function generarPDF(){
   const titulo=document.getElementById("pdfTitulo").value||"Reporte de noticias de mayor impacto";
   const autor=document.getElementById("pdfAutor").value||"Equipo editorial";
