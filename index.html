@@ -723,57 +723,60 @@ function renderCards(){
 // ==================== RENDER KANBAN ====================
 function renderKanban(vis,q){
   const cols={};
-  FACTORES.forEach(f=>{cols[f]=[];});
-  vis.forEach(n=>{
+  FACTORES.forEach(function(f){cols[f]=[];});
+  vis.forEach(function(n){
     const key=n.factor&&FACTORES.includes(n.factor)?n.factor:"Sin factor";
     if(!cols[key])cols[key]=[];
     cols[key].push(n);
   });
-  const activeFactors=FACTORES.filter(f=>cols[f]&&cols[f].length>0);
+  const activeFactors=FACTORES.filter(function(f){return cols[f]&&cols[f].length>0;});
   if(cols["Sin factor"]&&cols["Sin factor"].length>0) activeFactors.push("Sin factor");
   if(!activeFactors.length){
     document.getElementById("kanbanGrid").innerHTML='<div class="empty">No hay noticias con los filtros seleccionados.</div>';
     return;
   }
-  document.getElementById("kanbanGrid").innerHTML = activeFactors.map(factor => {
-    const cards = cols[factor]||[];
-    const color = FACTOR_COLORS[factor]||"#9A8F94";
-    return `<div class="kanban-col">
-      <div class="kanban-col-header" style="border-top:3px solid var(--gris4)">
-        <span class="kanban-col-title">${factor}</span>
-        <span class="kanban-col-count" style="background:var(--gris6)">${cards.length}</span>
-      </div>
-      <div class="kanban-cards">${cards.map(n=>kCard(n,q)).join("")}</div>
-    </div>`;
+  document.getElementById("kanbanGrid").innerHTML=activeFactors.map(function(factor){
+    const cards=cols[factor]||[];
+    return '<div class="kanban-col">'+
+      '<div class="kanban-col-header">'+
+        '<span class="kanban-col-title">'+factor+'</span>'+
+        '<span class="kanban-col-count">'+cards.length+'</span>'+
+      '</div>'+
+      '<div class="kanban-cards">'+cards.map(function(n){return kCard(n,q);}).join("")+'</div>'+
+    '</div>';
   }).join("");
 }
+
 
 function kCard(n,q){
   const cid="kc-"+n.id;
   const sel=selected.has(n.id);
-  return `<div class="k-card${sel?" selected":""}${n.prioritario?" prioritario":""}">
-    <div class="k-card-summary" onclick="toggleSel('${n.id}')">
-      <div class="k-card-top">
-        <div class="k-card-chk${sel?" on":""}" onclick="event.stopPropagation();toggleSel('${n.id}')"></div>
-        <span class="k-card-title">${highlight(n.titulo,q)}</span>
-        ${n.prioritario?'<span class="prio-badge" style="font-size:8px">Prio</span>':""}
-      </div>
-      <div class="k-card-meta">${fechaStr(n)}${n.fuente?" · "+n.fuente:""}</div>
-      <div class="k-card-desc-preview">${highlight(n.desc,q)}</div>
-      <div class="k-card-footer">
-        <div class="k-card-badges">${impactoBadge(n.impacto)}</div>
-        <button class="k-accordion-btn" id="btn-${cid}" onclick="event.stopPropagation();toggleAccordion('${cid}')">+ Ver</button>
-      </div>
-    </div>
-    <div class="k-card-expanded" id="${cid}">
-      <div class="k-card-full-desc">${highlight(n.desc,q)}</div>
-      <div class="k-card-actions">
-        ${n.sector?`<span class="badge b-tag" style="font-size:9px">${n.sector}</span>`:""}
-        ${n.factor?`<span class="badge b-tag" style="font-size:9px">${n.factor}</span>`:""}
-        ${docBadge(n)}
-      </div>
-    </div>
-  </div>`;
+  const prioBadge=n.prioritario?'<span class="prio-badge" style="font-size:8px">Prio</span>':"";
+  const sectorBadge=n.sector?'<span class="badge b-tag" style="font-size:9px">'+n.sector+'</span>':"";
+  const factorBadge=n.factor?'<span class="badge b-tag" style="font-size:9px">'+n.factor+'</span>':"";
+  const cardClass="k-card"+(sel?" selected":"")+(n.prioritario?" prioritario":"");
+  const chkClass="k-card-chk"+(sel?" on":"");
+  const eid=n.id.replace(/'/g,"");
+  const ecid=cid.replace(/'/g,"");
+  return '<div class="'+cardClass+'">'+
+    '<div class="k-card-summary" onclick="toggleSel(\''+eid+'\')">'+
+      '<div class="k-card-top">'+
+        '<div class="'+chkClass+'" onclick="event.stopPropagation();toggleSel(\''+eid+'\')"></div>'+
+        '<span class="k-card-title">'+highlight(n.titulo,q)+'</span>'+
+        prioBadge+
+      '</div>'+
+      '<div class="k-card-meta">'+fechaStr(n)+(n.fuente?" · "+n.fuente:"")+'</div>'+
+      '<div class="k-card-desc-preview">'+highlight(n.desc,q)+'</div>'+
+      '<div class="k-card-footer">'+
+        '<div class="k-card-badges">'+impactoBadge(n.impacto)+'</div>'+
+        '<button class="k-accordion-btn" id="btn-'+ecid+'" onclick="event.stopPropagation();toggleAccordion(\''+ecid+'\')">+ Ver</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="k-card-expanded" id="'+ecid+'">'+
+      '<div class="k-card-full-desc">'+highlight(n.desc,q)+'</div>'+
+      '<div class="k-card-actions">'+sectorBadge+factorBadge+docBadge(n)+'</div>'+
+    '</div>'+
+  '</div>';
 }
 
 
