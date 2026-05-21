@@ -87,7 +87,7 @@ header{background:#0A0A0A;padding:0 2rem;display:flex;align-items:center;justify
 .sidebar{background:var(--blanco);border-right:1px solid var(--borde);padding:1.25rem 1rem;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;overflow-x:visible;flex-shrink:0;transition:top .2s,height .2s}
 .sidebar::-webkit-scrollbar{width:3px}.sidebar::-webkit-scrollbar-thumb{background:var(--bg-magenta-light);border-radius:2px}
 .sidebar-section{margin-bottom:1.1rem}
-.sidebar-label{font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--bg-magenta);margin-bottom:7px;display:block}
+.sidebar-label{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris5);margin-bottom:7px;display:block}
 .sidebar-divider{border:none;border-top:1px solid var(--borde);margin:.9rem 0}
 
 /* Search */
@@ -257,16 +257,16 @@ header{background:#0A0A0A;padding:0 2rem;display:flex;align-items:center;justify
 .sv-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
 .sv-panel{background:var(--blanco);border:1.5px solid var(--borde);border-radius:var(--radio-lg);padding:1.25rem 1.5rem;box-shadow:var(--sombra-card)}
 .sv-panel.full{grid-column:1/-1}
-.sv-panel-title{font-size:9px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--bg-magenta);margin-bottom:1rem;display:flex;align-items:center;gap:6px}
-.sv-panel-title::after{content:"";flex:1;height:1px;background:var(--bg-magenta-light)}
+.sv-panel-title{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris6);margin-bottom:1rem;display:flex;align-items:center;gap:6px}
+.sv-panel-title::after{content:"";flex:1;height:1px;background:var(--gris3)}
 
 /* KPI Row */
 .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.25rem}
 .kpi-card{background:var(--blanco);border:1.5px solid var(--borde);border-radius:var(--radio-lg);padding:1rem 1.25rem;box-shadow:var(--sombra-card);position:relative;overflow:hidden;text-align:center}
-.kpi-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--bg-magenta)}
+.kpi-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--gris4)}
 .kpi-num{font-size:32px;font-weight:800;color:var(--negro);letter-spacing:-0.03em;line-height:1}
 .kpi-label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gris5);margin-top:4px}
-.kpi-sub{font-size:10px;color:var(--bg-magenta);font-weight:600;margin-top:2px}
+.kpi-sub{font-size:10px;color:var(--gris5);font-weight:500;margin-top:2px}
 
 /* Horizontal Bar Chart */
 .hbar-list{display:flex;flex-direction:column;gap:8px}
@@ -792,40 +792,59 @@ function toggleAccordion(cid){
 function renderStatsView(){
   const vis=filtradas();
   const total=vis.length;
-  if(total===0){document.getElementById("statsGrid").innerHTML="<div class=\"empty\">Sin datos para los filtros seleccionados.</div>";return;}
+  if(total===0){
+    document.getElementById("statsGrid").innerHTML="<div class=\"empty\">Sin datos para los filtros seleccionados.</div>";
+    return;
+  }
 
-  const alto=vis.filter(n=>n.impacto==="Alto").length;
-  const medio=vis.filter(n=>n.impacto==="Medio").length;
-  const bajo=vis.filter(n=>n.impacto==="Bajo").length;
-  const prios=vis.filter(n=>n.prioritario).length;
+  // ── KPIs (sobre vis) ──────────────────────────────────────────────────
+  const alto  = vis.filter(n=>n.impacto==="Alto").length;
+  const medio = vis.filter(n=>n.impacto==="Medio").length;
+  const bajo  = vis.filter(n=>n.impacto==="Bajo").length;
+  const prios = vis.filter(n=>n.prioritario).length;
 
-  // Factor counts
-  const factorC={};vis.forEach(n=>{if(n.factor)factorC[n.factor]=(factorC[n.factor]||0)+1;});
+  // ── Factor counts (sobre vis) ─────────────────────────────────────────
+  const factorC={};
+  vis.forEach(n=>{if(n.factor)factorC[n.factor]=(factorC[n.factor]||0)+1;});
   const factorSorted=Object.entries(factorC).sort((a,b)=>b[1]-a[1]);
   const maxF=factorSorted[0]?factorSorted[0][1]:1;
 
-  // Sector counts
-  const sectorC={};vis.forEach(n=>{if(n.sector)sectorC[n.sector]=(sectorC[n.sector]||0)+1;});
+  // ── Sector counts (sobre vis) ─────────────────────────────────────────
+  const sectorC={};
+  vis.forEach(n=>{if(n.sector)sectorC[n.sector]=(sectorC[n.sector]||0)+1;});
   const sectorSorted=Object.entries(sectorC).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const maxS=sectorSorted[0]?sectorSorted[0][1]:1;
 
-  // Daily trend (last 30 days)
+  // ── Tendencia: últimos 30 días SOBRE VIS ─────────────────────────────
   const today=new Date();
-  const days=[];for(let i=29;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);days.push(toISODate(d));}
+  const days=[];
+  for(let i=29;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);days.push(toISODate(d));}
   const dayCounts={};
-  noticias.forEach(n=>{if(n.anio&&n.mes&&n.dia){const key=n.anio+"-"+String(n.mes).padStart(2,"0")+"-"+String(n.dia).padStart(2,"0");dayCounts[key]=(dayCounts[key]||0)+1;}});
+  vis.forEach(n=>{
+    if(n.anio&&n.mes&&n.dia){
+      const key=n.anio+"-"+String(n.mes).padStart(2,"0")+"-"+String(n.dia).padStart(2,"0");
+      dayCounts[key]=(dayCounts[key]||0)+1;
+    }
+  });
   const vals=days.map(d=>dayCounts[d]||0);
-  const maxV=Math.max(...vals,1);
+  const total30=vals.reduce((a,b)=>a+b,0);
+  const activeDays=vals.filter(v=>v>0).length;
+  const avg30=activeDays?Math.round(total30/activeDays):0;
 
-  // Impacto x Factor stacked
+  // ── Impacto × Factor (sobre vis) ─────────────────────────────────────
   const ifData={};
   FACTORES.forEach(f=>{ifData[f]={Alto:0,Medio:0,Bajo:0};});
   vis.forEach(n=>{if(n.factor&&ifData[n.factor]&&n.impacto)ifData[n.factor][n.impacto]++;});
-  const ifSorted=Object.entries(ifData).filter(([,v])=>v.Alto+v.Medio+v.Bajo>0).sort((a,b)=>(b[1].Alto+b[1].Medio+b[1].Bajo)-(a[1].Alto+a[1].Medio+a[1].Bajo));
+  const ifSorted=Object.entries(ifData)
+    .filter(([,v])=>v.Alto+v.Medio+v.Bajo>0)
+    .sort((a,b)=>(b[1].Alto+b[1].Medio+b[1].Bajo)-(a[1].Alto+a[1].Medio+a[1].Bajo));
 
-  // Donut SVG builder
+  // ── Paleta sobria (escala de grises + un acento neutro) ───────────────
+  const BAR_PALETTE=["#1A0A12","#3D1228","#6B6068","#9A8F94","#CFC8CC","#E8E3E6","#B5005F","#E2007A"];
+
+  // ── Donut SVG ─────────────────────────────────────────────────────────
   function donutSVG(data,size){
-    const r=size*0.38,cx=size/2,cy=size/2,sw=size*0.18;
+    const r=size*0.38,cx=size/2,cy=size/2,sw=size*0.17;
     let sa=0;
     const tot=data.reduce((a,b)=>a+b.val,0)||1;
     const paths=data.filter(d=>d.val>0).map(d=>{
@@ -835,82 +854,119 @@ function renderStatsView(){
       const la=angle>Math.PI?1:0;
       const path="M "+x1+" "+y1+" A "+r+" "+r+" 0 "+la+" 1 "+x2+" "+y2;
       sa+=angle;
-      return"<path d=\""+path+"\" fill=\"none\" stroke=\""+d.color+"\" stroke-width=\""+sw+"\" stroke-linecap=\"butt\"/>";
+      return "<path d=\""+path+"\" fill=\"none\" stroke=\""+d.color+"\" stroke-width=\""+sw+"\" stroke-linecap=\"butt\"/>";
     }).join("");
-    return"<svg width=\""+size+"\" height=\""+size+"\" viewBox=\"0 0 "+size+" "+size+"\">"+paths+"<text x=\""+cx+"\" y=\""+cy+"\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\""+size*0.18+"\" font-weight=\"800\" font-family=\"Montserrat,sans-serif\" fill=\"#1A0A12\">"+tot+"</text></svg>";
+    return "<svg width=\""+size+"\" height=\""+size+"\" viewBox=\"0 0 "+size+" "+size+"\">"+
+      paths+
+      "<text x=\""+cx+"\" y=\""+cy+"\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\""+Math.round(size*0.17)+"\" font-weight=\"800\" font-family=\"Montserrat,sans-serif\" fill=\"#1A0A12\">"+tot+"</text>"+
+    "</svg>";
   }
 
-  // Sparkline path builder
+  // ── Sparkline ─────────────────────────────────────────────────────────
   function sparkPath(vals,W,H,pad){
     const mx=Math.max(...vals,1);
-    return vals.map((v,i)=>{const x=pad+(i/(vals.length-1))*(W-pad*2);const y=H-pad-(v/mx)*(H-pad*2);return(i===0?"M":"L")+" "+x+" "+y;}).join(" ");
+    return vals.map((v,i)=>{
+      const x=pad+(i/(vals.length-1))*(W-pad*2);
+      const y=H-pad-(v/mx)*(H-pad*2);
+      return (i===0?"M":"L")+" "+x.toFixed(1)+" "+y.toFixed(1);
+    }).join(" ");
   }
 
-  const W=400,H=80,pad=4;
-  const path=sparkPath(vals,W,H,pad);
-  const total30=vals.reduce((a,b)=>a+b,0);
-  const avg30=total30?Math.round(total30/vals.filter(v=>v>0).length)||0:0;
+  const W=400,H=72,pad=4;
+  const spPath=sparkPath(vals,W,H,pad);
 
+  // ── HTML ──────────────────────────────────────────────────────────────
   document.getElementById("statsGrid").innerHTML=
-    // KPI ROW
+
+    // KPI ROW — números grandes, colores sobrios
     "<div class=\"kpi-row\">"+
-      "<div class=\"kpi-card\"><div class=\"kpi-num\">"+total+"</div><div class=\"kpi-label\">Total noticias</div><div class=\"kpi-sub\">período seleccionado</div></div>"+
-      "<div class=\"kpi-card\" style=\"--kpi-c:var(--rojo)\"><div class=\"kpi-num\" style=\"color:var(--rojo)\">"+alto+"</div><div class=\"kpi-label\">Alto impacto</div><div class=\"kpi-sub\" style=\"color:var(--rojo)\">"+Math.round(alto/total*100)+"% del total</div></div>"+
-      "<div class=\"kpi-card\"><div class=\"kpi-num\" style=\"color:var(--gris6)\">"+bajo+"</div><div class=\"kpi-label\">Bajo impacto</div><div class=\"kpi-sub\" style=\"color:var(--gris6)\">"+Math.round(bajo/total*100)+"% del total</div></div>"+
-      "<div class=\"kpi-card\"><div class=\"kpi-num\" style=\"color:var(--bg-magenta)\">"+prios+"</div><div class=\"kpi-label\">Prioritarias</div><div class=\"kpi-sub\">"+Math.round(prios/total*100)+"% del total</div></div>"+
+      "<div class=\"kpi-card kpi-total\"><div class=\"kpi-num\">"+total+"</div><div class=\"kpi-label\">Total noticias</div><div class=\"kpi-sub\">período seleccionado</div></div>"+
+      "<div class=\"kpi-card kpi-alto\"><div class=\"kpi-num\">"+alto+"</div><div class=\"kpi-label\">Alto impacto</div><div class=\"kpi-sub\">"+Math.round(alto/total*100)+"% del total</div></div>"+
+      "<div class=\"kpi-card kpi-medio\"><div class=\"kpi-num\">"+medio+"</div><div class=\"kpi-label\">Medio impacto</div><div class=\"kpi-sub\">"+Math.round(medio/total*100)+"% del total</div></div>"+
+      "<div class=\"kpi-card kpi-prio\"><div class=\"kpi-num\">"+prios+"</div><div class=\"kpi-label\">Prioritarias</div><div class=\"kpi-sub\">"+Math.round(prios/total*100)+"% del total</div></div>"+
     "</div>"+
-    // ROW 1: Factor bars + Donut impacto
+
+    // ROW 1: Factor + Donut
     "<div class=\"sv-grid\">"+
-      "<div class=\"sv-panel\"><div class=\"sv-panel-title\">Noticias por Factor</div><div class=\"hbar-list\">"+
-        factorSorted.map(([name,count],i)=>"<div class=\"hbar-row\"><span class=\"hbar-label\" title=\""+name+"\">"+name+"</span><div class=\"hbar-track\"><div class=\"hbar-fill\" style=\"width:"+(count/maxF*100)+"%;background:"+["#E2007A","#B5005F","#C8406A","#9A3050","#6B6068","#9A8F94","#CFC8CC","#1A0A12"][factorSorted.indexOf(factorSorted.find(([n])=>n===name))%8]+"\"></div></div><span class=\"hbar-val\">"+count+"</span><span class=\"hbar-pct\">"+Math.round(count/total*100)+"%</span></div>").join("")+
-      "</div></div>"+
+      "<div class=\"sv-panel\"><div class=\"sv-panel-title\">Noticias por Factor</div>"+
+        "<div class=\"hbar-list\">"+
+          factorSorted.map(([name,count],i)=>
+            "<div class=\"hbar-row\">"+
+              "<span class=\"hbar-label\" title=\""+name+"\">"+name+"</span>"+
+              "<div class=\"hbar-track\"><div class=\"hbar-fill\" style=\"width:"+(count/maxF*100)+"%;background:"+BAR_PALETTE[i%BAR_PALETTE.length]+"\"></div></div>"+
+              "<span class=\"hbar-val\">"+count+"</span>"+
+              "<span class=\"hbar-pct\">"+Math.round(count/total*100)+"%</span>"+
+            "</div>"
+          ).join("")+
+        "</div>"+
+      "</div>"+
+
       "<div class=\"sv-panel\"><div class=\"sv-panel-title\">Distribución por Impacto</div>"+
         "<div class=\"donut-wrap-lg\">"+
-          donutSVG([{val:alto,color:"#C0392B"},{val:medio,color:"#E2007A"},{val:bajo,color:"#CFC8CC"}],140)+
+          donutSVG([{val:alto,color:"#1A0A12"},{val:medio,color:"#6B6068"},{val:bajo,color:"#CFC8CC"}],130)+
           "<div class=\"donut-legend-lg\">"+
-            "<div class=\"donut-leg-item-lg\"><div class=\"donut-leg-dot-lg\" style=\"background:#C0392B\"></div><span class=\"donut-leg-label\">Alto</span><span class=\"donut-leg-val\">"+alto+"</span><span class=\"donut-leg-pct\">"+Math.round(alto/total*100)+"%</span></div>"+
-            "<div class=\"donut-leg-item-lg\"><div class=\"donut-leg-dot-lg\" style=\"background:#E2007A\"></div><span class=\"donut-leg-label\">Medio</span><span class=\"donut-leg-val\">"+medio+"</span><span class=\"donut-leg-pct\">"+Math.round(medio/total*100)+"%</span></div>"+
+            "<div class=\"donut-leg-item-lg\"><div class=\"donut-leg-dot-lg\" style=\"background:#1A0A12\"></div><span class=\"donut-leg-label\">Alto</span><span class=\"donut-leg-val\">"+alto+"</span><span class=\"donut-leg-pct\">"+Math.round(alto/total*100)+"%</span></div>"+
+            "<div class=\"donut-leg-item-lg\"><div class=\"donut-leg-dot-lg\" style=\"background:#6B6068\"></div><span class=\"donut-leg-label\">Medio</span><span class=\"donut-leg-val\">"+medio+"</span><span class=\"donut-leg-pct\">"+Math.round(medio/total*100)+"%</span></div>"+
             "<div class=\"donut-leg-item-lg\"><div class=\"donut-leg-dot-lg\" style=\"background:#CFC8CC\"></div><span class=\"donut-leg-label\">Bajo</span><span class=\"donut-leg-val\">"+bajo+"</span><span class=\"donut-leg-pct\">"+Math.round(bajo/total*100)+"%</span></div>"+
           "</div>"+
         "</div>"+
       "</div>"+
     "</div>"+
-    // ROW 2: Sector bars + Stacked impacto x factor
+
+    // ROW 2: Sectores + Stacked
     "<div class=\"sv-grid\">"+
-      "<div class=\"sv-panel\"><div class=\"sv-panel-title\">Top Sectores</div><div class=\"hbar-list\">"+
-        sectorSorted.map(([name,count])=>"<div class=\"hbar-row\"><span class=\"hbar-label\" title=\""+name+"\">"+name.split(" ").slice(0,3).join(" ")+"</span><div class=\"hbar-track\"><div class=\"hbar-fill\" style=\"width:"+(count/maxS*100)+"%;background:var(--bg-magenta)\"></div></div><span class=\"hbar-val\">"+count+"</span><span class=\"hbar-pct\">"+Math.round(count/total*100)+"%</span></div>").join("")+
-      "</div></div>"+
+      "<div class=\"sv-panel\"><div class=\"sv-panel-title\">Top Sectores</div>"+
+        "<div class=\"hbar-list\">"+
+          sectorSorted.map(([name,count])=>
+            "<div class=\"hbar-row\">"+
+              "<span class=\"hbar-label\" title=\""+name+"\">"+name.split(" ").slice(0,3).join(" ")+"</span>"+
+              "<div class=\"hbar-track\"><div class=\"hbar-fill\" style=\"width:"+(count/maxS*100)+"%;background:#1A0A12\"></div></div>"+
+              "<span class=\"hbar-val\">"+count+"</span>"+
+              "<span class=\"hbar-pct\">"+Math.round(count/total*100)+"%</span>"+
+            "</div>"
+          ).join("")+
+        "</div>"+
+      "</div>"+
+
       "<div class=\"sv-panel\"><div class=\"sv-panel-title\">Impacto por Factor</div>"+
         "<div style=\"margin-top:.25rem\">"+
-          ifSorted.map(([factor,d])=>{const t=d.Alto+d.Medio+d.Bajo;return"<div class=\"sb-row\"><span class=\"sb-label\" title=\""+factor+"\">"+factor.slice(0,12)+"</span><div class=\"sb-track\">"+
-            (d.Alto?"<div class=\"sb-seg\" style=\"width:"+(d.Alto/t*100)+"%;background:#C0392B\">"+(d.Alto>1?d.Alto:"")+"</div>":"")+
-            (d.Medio?"<div class=\"sb-seg\" style=\"width:"+(d.Medio/t*100)+"%;background:#E2007A\">"+(d.Medio>1?d.Medio:"")+"</div>":"")+
-            (d.Bajo?"<div class=\"sb-seg\" style=\"width:"+(d.Bajo/t*100)+"%;background:#9A8F94\">"+(d.Bajo>1?d.Bajo:"")+"</div>":"")+
-          "</div><span class=\"sb-val\">"+t+"</span></div>";}).join("")+
+          ifSorted.map(([factor,d])=>{
+            const t=d.Alto+d.Medio+d.Bajo;
+            return "<div class=\"sb-row\">"+
+              "<span class=\"sb-label\" title=\""+factor+"\">"+factor.slice(0,12)+"</span>"+
+              "<div class=\"sb-track\">"+
+                (d.Alto?"<div class=\"sb-seg\" style=\"width:"+(d.Alto/t*100)+"%;background:#1A0A12\">"+(d.Alto>1?d.Alto:"")+"</div>":"")+
+                (d.Medio?"<div class=\"sb-seg\" style=\"width:"+(d.Medio/t*100)+"%;background:#6B6068\">"+(d.Medio>1?d.Medio:"")+"</div>":"")+
+                (d.Bajo?"<div class=\"sb-seg\" style=\"width:"+(d.Bajo/t*100)+"%;background:#CFC8CC\">"+(d.Bajo>1?d.Bajo:"")+"</div>":"")+
+              "</div>"+
+              "<span class=\"sb-val\">"+t+"</span>"+
+            "</div>";
+          }).join("")+
         "</div>"+
       "</div>"+
     "</div>"+
-    // ROW 3: Tendencia full width
-    "<div class=\"sv-panel full\"><div class=\"sv-panel-title\">Tendencia de publicación · Últimos 30 días</div>"+
+
+    // ROW 3: Tendencia
+    "<div class=\"sv-panel full\"><div class=\"sv-panel-title\">Tendencia de publicación · Últimos 30 días (filtrado)</div>"+
       "<div style=\"display:flex;gap:2rem;align-items:flex-start\">"+
         "<div style=\"flex:1;min-width:0\">"+
-          "<svg width=\"100%\" height=\"80\" viewBox=\"0 0 "+W+" "+H+"\" preserveAspectRatio=\"none\" style=\"display:block\">"+
-            "<defs><linearGradient id=\"trendGrad\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0%\" stop-color=\"#E2007A\" stop-opacity=\"0.15\"/><stop offset=\"100%\" stop-color=\"#E2007A\" stop-opacity=\"0\"/></linearGradient></defs>"+
-            "<path d=\""+path+" L "+(W-pad)+" "+H+" L "+pad+" "+H+" Z\" fill=\"url(#trendGrad)\"/>"+
-            "<path d=\""+path+"\" fill=\"none\" stroke=\"#E2007A\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>"+
+          "<svg width=\"100%\" height=\"72\" viewBox=\"0 0 "+W+" "+H+"\" preserveAspectRatio=\"none\" style=\"display:block\">"+
+            "<path d=\""+spPath+" L "+(W-pad)+" "+H+" L "+pad+" "+H+" Z\" fill=\"#1A0A12\" fill-opacity=\"0.06\"/>"+
+            "<path d=\""+spPath+"\" fill=\"none\" stroke=\"#1A0A12\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>"+
           "</svg>"+
           "<div style=\"display:flex;justify-content:space-between;margin-top:4px\">"+
             "<span style=\"font-size:9px;color:var(--gris5);font-weight:500\">"+days[0].slice(5).split("-").reverse().join("/")+"</span>"+
             "<span style=\"font-size:9px;color:var(--gris5);font-weight:500\">"+days[29].slice(5).split("-").reverse().join("/")+"</span>"+
           "</div>"+
         "</div>"+
-        "<div style=\"display:flex;flex-direction:column;gap:10px;flex-shrink:0\">"+
-          "<div style=\"text-align:center\"><div style=\"font-size:28px;font-weight:800;color:var(--negro);letter-spacing:-0.02em\">"+total30+"</div><div style=\"font-size:9px;color:var(--gris5);font-weight:700;text-transform:uppercase;letter-spacing:0.1em\">Total 30 días</div></div>"+
-          "<div style=\"text-align:center\"><div style=\"font-size:28px;font-weight:800;color:var(--bg-magenta);letter-spacing:-0.02em\">"+avg30+"</div><div style=\"font-size:9px;color:var(--gris5);font-weight:700;text-transform:uppercase;letter-spacing:0.1em\">Prom. días activos</div></div>"+
+        "<div style=\"display:flex;flex-direction:column;gap:12px;flex-shrink:0;border-left:1px solid var(--gris3);padding-left:1.5rem\">"+
+          "<div><div style=\"font-size:26px;font-weight:800;color:var(--negro);letter-spacing:-0.02em;line-height:1\">"+total30+"</div><div style=\"font-size:9px;color:var(--gris5);font-weight:600;text-transform:uppercase;letter-spacing:0.1em;margin-top:3px\">En período</div></div>"+
+          "<div><div style=\"font-size:26px;font-weight:800;color:var(--negro);letter-spacing:-0.02em;line-height:1\">"+avg30+"</div><div style=\"font-size:9px;color:var(--gris5);font-weight:600;text-transform:uppercase;letter-spacing:0.1em;margin-top:3px\">Prom. día activo</div></div>"+
         "</div>"+
       "</div>"+
     "</div>";
 }
+
 
 // ==================== VIEW ====================
 function setView(v){
